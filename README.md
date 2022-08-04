@@ -5,7 +5,7 @@
 *Authenication Login, Register, Middleware JWT
 
 # Endpoint
-*GroupAuth("/api/auth")
+. GroupAuth("/api/auth")
   authRoutes.POST("/login", authController.Login)
   authRoutes.POST("/register", authController.Register)
 *GroupUser("/api/user")
