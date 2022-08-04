@@ -1,8 +1,11 @@
 # Opiniatest
 
 # Overview
-*CRUD User, Postingan
-*Authenication Login, Register, Middleware JWT
+*CRUD User, 
+Postingan
+*Authenication Login, 
+Register, 
+Middleware JWT
 
 # Endpoint
 *GroupAuth("/api/auth")
