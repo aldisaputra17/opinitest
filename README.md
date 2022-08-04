@@ -1,10 +1,10 @@
-# opiniatest
+# Opiniatest
 
-#Overview
+# Overview
 *CRUD User, Postingan
 *Authenication Login, Register, Middleware JWT
 
-#Endpoint
+# Endpoint
 *GroupAuth("/api/auth")
   authRoutes.POST("/login", authController.Login)
   authRoutes.POST("/register", authController.Register)
@@ -18,7 +18,7 @@
 	postinganRoutes.PUT("/post/:id", postinganController.Update)
 	postinganRoutes.DELETE("/post/:id", postinganController.Delete)
 
-#Tools
+# Tools
 *Mysql
 *GORM
 *GIN-GONIC
