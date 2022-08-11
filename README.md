@@ -1,6 +1,6 @@
 # Go Jwt Implementation & Middleware Gin-Gonic
 
-##Overview
+## Overview
 *CRUD User, 
 Postingan
 *Authenication Login, 
@@ -23,7 +23,7 @@ Middleware JWT
   postinganRoutes.PUT("/post/:id", postinganController.Update)
   postinganRoutes.DELETE("/post/:id", postinganController.Delete)
 
-##Tools
+## Tools
 *Mysql
 *GORM
 *GIN-GONIC
