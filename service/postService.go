@@ -11,9 +11,9 @@ import (
 )
 
 type PostinganService interface {
-	Create(p dataobject.PostCreateObj) (models.Postingan, error)
-	GetAll() ([]models.Postingan, error)
-	Update(p dataobject.PostUpdatedObj) (models.Postingan, error)
+	Create(p dataobject.PostCreateObj) models.Postingan
+	GetAll() []models.Postingan
+	Update(p dataobject.PostUpdatedObj) models.Postingan
 	Delete(p models.Postingan)
 	FindById(postinganID uint64) models.Postingan
 	IsAllowedToEdit(userID string, postID uint64) bool
@@ -29,34 +29,29 @@ func NewPostService(postRepo repository.PostinganRepository) PostinganService {
 	}
 }
 
-func (service *postService) Create(p dataobject.PostCreateObj) (models.Postingan, error) {
+func (service *postService) Create(p dataobject.PostCreateObj) models.Postingan {
 	postCreate := models.Postingan{}
-	err := smapping.FillStruct(postCreate, smapping.MapFields(&p))
+	err := smapping.FillStruct(&postCreate, smapping.MapFields(&p))
 	if err != nil {
 		log.Fatalf("Failed map %v:", err)
 	}
-	res, err := service.postRepository.InsertPostingan(postCreate)
-	if err != nil {
-		return res, err
-	}
-	return res, nil
+	res := service.postRepository.InsertPostingan(postCreate)
+	return res
 }
 
-func (service *postService) GetAll() ([]models.Postingan, error) {
+func (service *postService) GetAll() []models.Postingan {
 	return service.postRepository.AllPostingan()
 }
 
-func (service *postService) Update(p dataobject.PostUpdatedObj) (models.Postingan, error) {
+func (service *postService) Update(p dataobject.PostUpdatedObj) models.Postingan {
 	postUpdate := models.Postingan{}
 	err := smapping.FillStruct(postUpdate, smapping.MapFields(&p))
 	if err != nil {
 		log.Fatalf("Failed map %v :", err)
 	}
-	res, err := service.postRepository.UpdatePostingan(postUpdate)
-	if err != nil {
-		return res, err
-	}
-	return res, nil
+	res := service.postRepository.UpdatePostingan(postUpdate)
+
+	return res
 }
 
 func (service *postService) Delete(p models.Postingan) {
@@ -69,6 +64,6 @@ func (service *postService) FindById(postinganID uint64) models.Postingan {
 
 func (service *postService) IsAllowedToEdit(userID string, postID uint64) bool {
 	p := service.postRepository.FindPostinganByID(postID)
-	id := fmt.Sprintf("%v", p.User_ID)
+	id := fmt.Sprintf("%v", p.UserID)
 	return userID == id
 }

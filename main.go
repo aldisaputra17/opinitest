@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/aldisaputra17/post_opinia/controllers"
 	"github.com/aldisaputra17/post_opinia/database"
+	"github.com/aldisaputra17/post_opinia/middleware"
 	"github.com/aldisaputra17/post_opinia/repository"
 	"github.com/aldisaputra17/post_opinia/service"
 	"github.com/gin-gonic/gin"
@@ -32,18 +33,18 @@ func main() {
 		authRoutes.POST("/login", authController.Login)
 		authRoutes.POST("/register", authController.Register)
 	}
-	userRoutes := r.Group("/api/user")
+	userRoutes := r.Group("/api/user", middleware.AuthorizeJWT(jwtService))
 
 	{
 		userRoutes.GET("/profile", userController.Profile)
 		userRoutes.PUT("/profile", userController.Update)
 	}
-	postinganRoutes := r.Group("/api/v1")
+	postinganRoutes := r.Group("/api/v1", middleware.AuthorizeJWT(jwtService))
 
 	{
 		postinganRoutes.GET("/posts", postinganController.GetAll)
 		postinganRoutes.GET("/post/:id", postinganController.FindByID)
-		postinganRoutes.POST("/post", postinganController.Create)
+		postinganRoutes.POST("/posts", postinganController.Create)
 		postinganRoutes.PUT("/post/:id", postinganController.Update)
 		postinganRoutes.DELETE("/post/:id", postinganController.Delete)
 	}

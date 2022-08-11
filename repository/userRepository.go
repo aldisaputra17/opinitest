@@ -29,7 +29,7 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 
 func (db *userConnection) InsertUser(user models.User) models.User {
 	user.Password = hashAndSalt([]byte(user.Password))
-	db.connection.Save(&user)
+	db.connection.Create(&user)
 	return user
 }
 
@@ -68,7 +68,7 @@ func (db *userConnection) FindByEmail(email string) models.User {
 
 func (db *userConnection) ProfileUser(userID string) models.User {
 	var user models.User
-	db.connection.Preload("Books").Preload("Books.User").Find(&user, userID)
+	db.connection.Preload("Postingans").Preload("Postingans.User").Find(&user, userID)
 	return user
 }
 

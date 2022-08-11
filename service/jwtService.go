@@ -25,7 +25,7 @@ type jwtService struct {
 
 func NewJWTService() JWTService {
 	return &jwtService{
-		issuer:    "jwttesting",
+		issuer:    "jwttest",
 		secretKey: getSecretKey(),
 	}
 }
@@ -33,14 +33,14 @@ func NewJWTService() JWTService {
 func getSecretKey() string {
 	secretKey := os.Getenv("JWT_SECRET")
 	if secretKey != "" {
-		secretKey = "jwttesting"
+		secretKey = "jwttest"
 	}
 	return secretKey
 }
 
-func (j *jwtService) GenerateToken(userID string) string {
+func (j *jwtService) GenerateToken(UserID string) string {
 	claims := &jwtCustomClaim{
-		userID,
+		UserID,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().AddDate(1, 0, 0).Unix(),
 			Issuer:    j.issuer,

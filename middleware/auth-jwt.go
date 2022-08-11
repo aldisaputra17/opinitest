@@ -32,4 +32,4 @@ func AuthorizeJWT(jwtService service.JWTService) gin.HandlerFunc {
 	}
 }
 
-// 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
+//

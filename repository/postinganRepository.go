@@ -6,10 +6,10 @@ import (
 )
 
 type PostinganRepository interface {
-	InsertPostingan(p models.Postingan) (models.Postingan, error)
-	UpdatePostingan(p models.Postingan) (models.Postingan, error)
+	InsertPostingan(p models.Postingan) models.Postingan
+	UpdatePostingan(p models.Postingan) models.Postingan
 	DeletePostingan(p models.Postingan)
-	AllPostingan() ([]models.Postingan, error)
+	AllPostingan() []models.Postingan
 	FindPostinganByID(postinganID uint64) models.Postingan
 }
 
@@ -23,37 +23,33 @@ func NewPostinganRepository(dbConn *gorm.DB) PostinganRepository {
 	}
 }
 
-func (db *postinganConnection) InsertPostingan(p models.Postingan) (models.Postingan, error) {
-	err := db.connection.Create(&p).Error
-	if err != nil {
-		return p, err
-	}
-	return p, nil
+func (db *postinganConnection) InsertPostingan(p models.Postingan) models.Postingan {
+	db.connection.Create(&p)
+	db.connection.Preload("User").Find(&p)
+	return p
 }
 
-func (db *postinganConnection) UpdatePostingan(p models.Postingan) (models.Postingan, error) {
-	err := db.connection.Create(&p).Error
-	if err != nil {
-		return p, err
-	}
-	return p, nil
+func (db *postinganConnection) UpdatePostingan(p models.Postingan) models.Postingan {
+	db.connection.Create(&p)
+	return p
 }
 
 func (db *postinganConnection) DeletePostingan(p models.Postingan) {
 	db.connection.Delete(&p)
 }
 
-func (db *postinganConnection) FindPostinganByID(postinganID uint64) models.Postingan {
+func (db *postinganConnection) FindPostinganByID(postID uint64) models.Postingan {
 	var post models.Postingan
-	db.connection.Where("id = ?", postinganID).Joins("PostType").Joins("User").Find(&post)
+	db.connection.Preload("User").Find(&post, postID)
 	return post
 }
 
-func (db *postinganConnection) AllPostingan() ([]models.Postingan, error) {
+func (db *postinganConnection) AllPostingan() []models.Postingan {
 	var postingans []models.Postingan
-	err := db.connection.Find(&postingans).Error
-	if err != nil {
-		return postingans, err
-	}
-	return postingans, nil
+	db.connection.Preload("User").Find(&postingans)
+	return postingans
 }
+
+// func (db *postinganConnection) TypePost() error {
+// 	result := db.connection.
+// }

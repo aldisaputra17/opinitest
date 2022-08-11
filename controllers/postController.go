@@ -35,11 +35,8 @@ func NewPostController(postServ service.PostinganService, jwtServ service.JWTSer
 }
 
 func (c *postController) GetAll(context *gin.Context) {
-	var posts []models.Postingan
-	res, err := c.postService.GetAll()
-	if err != nil {
-		helpers.BuildResponse(true, "OK", posts)
-	}
+	var posts []models.Postingan = c.postService.GetAll()
+	res := helpers.BuildResponse(true, "OK", posts)
 	context.JSON(http.StatusOK, res)
 }
 
@@ -52,12 +49,9 @@ func (c *postController) FindByID(context *gin.Context) {
 	}
 	helpers.BuildErrorResponse("Data not found", "No data with given id", helpers.EmptyObj{})
 
-	var post models.Postingan
+	var post models.Postingan = c.postService.FindById(id)
 	if (post == models.Postingan{}) {
-		res := c.postService.FindById(id)
-		if err != nil {
-			helpers.BuildErrorResponse("Data not found", "No data with given id", helpers.EmptyObj{})
-		}
+		res := helpers.BuildErrorResponse("Data not found", "No data with given id", helpers.EmptyObj{})
 		context.JSON(http.StatusNotFound, res)
 	} else {
 		res := helpers.BuildResponse(true, "OK", post)
@@ -76,13 +70,12 @@ func (c *postController) Create(context *gin.Context) {
 		userID := c.getUserIDByToken(authHeader)
 		convertedUserID, err := strconv.ParseUint(userID, 10, 64)
 		if err == nil {
-			postCreateObj.User_ID = convertedUserID
+			postCreateObj.UserID = convertedUserID
 		}
-		result, err := c.postService.Create(postCreateObj)
-		if err != nil {
-			response := helpers.BuildResponse(true, "OK", result)
-			context.JSON(http.StatusCreated, response)
-		}
+		result := c.postService.Create(postCreateObj)
+		response := helpers.BuildResponse(true, "OK", result)
+		context.JSON(http.StatusCreated, response)
+
 	}
 }
 
@@ -102,16 +95,15 @@ func (c *postController) Update(context *gin.Context) {
 	}
 	claims := token.Claims.(jwt.MapClaims)
 	userID := fmt.Sprintf("%v", claims["user_id"])
-	if c.postService.IsAllowedToEdit(userID, postUpdatedObj.User_ID) {
+	if c.postService.IsAllowedToEdit(userID, postUpdatedObj.UserID) {
 		id, errID := strconv.ParseUint(userID, 10, 64)
 		if errID == nil {
-			postUpdatedObj.User_ID = id
+			postUpdatedObj.UserID = id
 		}
-		result, err := c.postService.Update(postUpdatedObj)
-		if err != nil {
-			response := helpers.BuildResponse(true, "OK", result)
-			context.JSON(http.StatusOK, response)
-		}
+		result := c.postService.Update(postUpdatedObj)
+		response := helpers.BuildResponse(true, "OK", result)
+		context.JSON(http.StatusOK, response)
+
 	} else {
 		response := helpers.BuildErrorResponse("You dont have permission", "You are not the owner", helpers.EmptyObj{})
 		context.JSON(http.StatusForbidden, response)
@@ -125,7 +117,7 @@ func (c *postController) Delete(context *gin.Context) {
 		response := helpers.BuildErrorResponse("Failed tou get id", "No param id were found", helpers.EmptyObj{})
 		context.JSON(http.StatusBadRequest, response)
 	}
-	post.User_ID = id
+	post.ID = id
 	authHeader := context.GetHeader("Authorization")
 	token, errToken := c.jwtService.ValidateToken(authHeader)
 	if errToken != nil {
@@ -133,7 +125,7 @@ func (c *postController) Delete(context *gin.Context) {
 	}
 	claims := token.Claims.(jwt.MapClaims)
 	userID := fmt.Sprintf("%v", claims["user_id"])
-	if c.postService.IsAllowedToEdit(userID, post.User_ID) {
+	if c.postService.IsAllowedToEdit(userID, post.ID) {
 		c.postService.Delete(post)
 		res := helpers.BuildResponse(true, "Deleted", helpers.EmptyObj{})
 		context.JSON(http.StatusOK, res)
@@ -144,11 +136,11 @@ func (c *postController) Delete(context *gin.Context) {
 }
 
 func (c *postController) getUserIDByToken(token string) string {
-	aToken, err := c.jwtService.ValidateToken(token)
+	Token, err := c.jwtService.ValidateToken(token)
 	if err != nil {
 		panic(err.Error())
 	}
-	claims := aToken.Claims.(jwt.MapClaims)
+	claims := Token.Claims.(jwt.MapClaims)
 	id := fmt.Sprintf("%v", claims["user_id"])
 	return id
 }
