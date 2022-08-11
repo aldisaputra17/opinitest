@@ -50,6 +50,4 @@ func (db *postinganConnection) AllPostingan() []models.Postingan {
 	return postingans
 }
 
-// func (db *postinganConnection) TypePost() error {
-// 	result := db.connection.
-// }
+//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
